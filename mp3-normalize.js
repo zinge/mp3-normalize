@@ -5,6 +5,7 @@ const { spawn } = require("child_process");
 
 const INPUT_DIR = "/home/zinge/Музыка";
 const OUT_DIR = "/home/zinge/out";
+const MP3 = ".mp3";
 
 async function getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true });
@@ -22,6 +23,7 @@ async function createNewFileDirectory(newDirName) {
   if (!existsSync(newDirName)) {
     try {
       const newDir = await mkdir(newDirName, { recursive: true });
+
       return newDir;
     } catch (error) {
       throw error;
@@ -37,7 +39,9 @@ function decode(currentFile, newFile) {
     "-map",
     "0:a",
     "-af",
-    "loudnorm=I=-16:TP=-1:LRA=18", // https://bva.dyndns.info/2018/10/loudness-normalization
+    "loudnorm=I=-16:TP=-1:LRA=20", // https://bva.dyndns.info/2018/10/loudness-normalization
+    "-ar",
+    "48k",
     newFile,
   ]);
 
@@ -53,6 +57,7 @@ function decode(currentFile, newFile) {
         resolve();
       } else {
         const err = new Error(`Encode ${newFile} exited with code ${code}`);
+
         reject(err);
       }
     });
@@ -61,22 +66,22 @@ function decode(currentFile, newFile) {
   return promise;
 }
 
-async function processArray(array) {
-  const total = array.length;
+async function processFiles(files) {
+  const totalFiles = files.length;
 
-  for (let index = 0; index < total; index++) {
-    const item = array[index];
+  for (let index = 0; index < totalFiles; index++) {
+    const file = files[index];
 
-    if (extname(item).toLowerCase() === ".mp3") {
-      const dirName = dirname(item);
+    if (extname(file).toLowerCase() === MP3) {
+      const dirName = dirname(file);
       const newDirName = dirName.replace(INPUT_DIR, OUT_DIR);
       await createNewFileDirectory(newDirName);
 
-      const newFile = newDirName + "/" + basename(item);
+      const newFile = newDirName + "/" + basename(file);
       if (!existsSync(newFile)) {
-        console.log(`Process ${index} of ${total}`);
+        console.log(`Process ${index} of ${totalFiles}`);
 
-        await decode(item, newFile);
+        await decode(file, newFile);
       }
     }
   }
@@ -87,7 +92,7 @@ async function main() {
   const files = await getFiles(INPUT_DIR);
   console.log("Files hierarchy created");
 
-  await processArray(files);
+  await processFiles(files);
   console.log("All Done!");
 }
 
