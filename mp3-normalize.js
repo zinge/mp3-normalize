@@ -62,7 +62,11 @@ function decode(currentFile, newFile) {
 }
 
 async function processArray(array) {
-  for (const item of array) {
+  const total = array.length;
+
+  for (let index = 0; index < total; index++) {
+    const item = array[index];
+
     if (extname(item).toLowerCase() === ".mp3") {
       const dirName = dirname(item);
       const newDirName = dirName.replace(INPUT_DIR, OUT_DIR);
@@ -70,6 +74,8 @@ async function processArray(array) {
 
       const newFile = newDirName + "/" + basename(item);
       if (!existsSync(newFile)) {
+        console.log(`Process ${index} of ${total}`);
+
         await decode(item, newFile);
       }
     }
