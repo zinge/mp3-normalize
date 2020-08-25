@@ -31,8 +31,11 @@ async function createNewFileDirectory(newDirName) {
 
 function decode(currentFile, newFile) {
   const encode = spawn("ffmpeg", [
+    "-hide_banner",
     "-i",
     currentFile,
+    "-map",
+    "0:a",
     "-af",
     "loudnorm=I=-16:TP=-1:LRA=18", // https://bva.dyndns.info/2018/10/loudness-normalization
     newFile,
