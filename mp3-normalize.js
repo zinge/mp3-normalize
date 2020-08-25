@@ -34,7 +34,7 @@ function decode(currentFile, newFile) {
     "-i",
     currentFile,
     "-af",
-    "loudnorm=I=-16:TP=-1:LRA=18",
+    "loudnorm=I=-16:TP=-1:LRA=18", // https://bva.dyndns.info/2018/10/loudness-normalization
     newFile,
   ]);
 
