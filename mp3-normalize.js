@@ -32,22 +32,22 @@ async function createNewFileDirectory(newDirName) {
 }
 
 function decode(currentFile, newFile) {
-  const encode = spawn("ffmpeg", [
-    "-hide_banner",
-    "-i",
-    currentFile,
-    "-map",
-    "0:a",
-    "-af",
-    "loudnorm=I=-16:TP=-1:LRA=20", // https://bva.dyndns.info/2018/10/loudness-normalization
-    "-ar",
-    "48k",
-    newFile,
-  ]);
-
-  encode.stderr.on("data", (data) => {
-    console.error(`${data}`);
-  });
+  const encode = spawn(
+    "ffmpeg",
+    [
+      "-hide_banner",
+      "-i",
+      currentFile,
+      "-map",
+      "0:a",
+      "-af",
+      "loudnorm=I=-16:TP=-1:LRA=20", // https://bva.dyndns.info/2018/10/loudness-normalization
+      "-ar",
+      "48k",
+      newFile,
+    ],
+    { stdio: "inherit" }
+  );
 
   const promise = new Promise((resolve, reject) => {
     encode.on("error", reject);
