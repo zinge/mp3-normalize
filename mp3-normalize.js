@@ -2,32 +2,35 @@ const { resolve, dirname, basename, extname } = require("path");
 const { readdir, mkdir } = require("fs").promises;
 const { existsSync } = require("fs");
 const { spawn } = require("child_process");
+const endOfLine = require("os").EOL;
 
 const INPUT_DIR = "/home/zinge/Музыка";
 const OUT_DIR = "/home/zinge/out";
 const MP3 = ".mp3";
 
 async function getFiles(dir) {
-  const dirents = await readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(
-    dirents.map((dirent) => {
-      const res = resolve(dir, dirent.name);
-      return dirent.isDirectory() ? getFiles(res) : res;
-    })
-  );
+  try {
+    const dirents = await readdir(dir, { withFileTypes: true });
+    const files = await Promise.all(
+      dirents.map((dirent) => {
+        const res = resolve(dir, dirent.name);
+        return dirent.isDirectory() ? getFiles(res) : res;
+      })
+    );
 
-  return Array.prototype.concat(...files);
+    return Array.prototype.concat(...files);
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function createNewFileDirectory(newDirName) {
-  if (!existsSync(newDirName)) {
-    try {
-      const newDir = await mkdir(newDirName, { recursive: true });
-
-      return newDir;
-    } catch (error) {
-      throw error;
+  try {
+    if (!existsSync(newDirName)) {
+      await mkdir(newDirName, { recursive: true });
     }
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -69,31 +72,42 @@ function decode(currentFile, newFile) {
 async function processFiles(files) {
   const totalFiles = files.length;
 
-  for (let index = 0; index < totalFiles; index++) {
-    const file = files[index];
+  try {
+    for (let index = 0; index < totalFiles; index++) {
+      const file = files[index];
 
-    if (extname(file).toLowerCase() === MP3) {
-      const dirName = dirname(file);
-      const newDirName = dirName.replace(INPUT_DIR, OUT_DIR);
-      await createNewFileDirectory(newDirName);
+      if (extname(file).toLowerCase() === MP3) {
+        const dirName = dirname(file);
+        const newDirName = dirName.replace(INPUT_DIR, OUT_DIR);
+        await createNewFileDirectory(newDirName);
 
-      const newFile = newDirName + "/" + basename(file);
-      if (!existsSync(newFile)) {
-        console.log(`Process ${index} of ${totalFiles}`);
+        const newFile = newDirName + "/" + basename(file);
+        if (!existsSync(newFile)) {
+          console.log(
+            "\x1b[36m%s\x1b[0m",
+            `${endOfLine}Process ${index} of ${totalFiles}`
+          );
 
-        await decode(file, newFile);
+          await decode(file, newFile);
+        }
       }
     }
+  } catch (error) {
+    throw error;
   }
 }
 
 async function main() {
-  console.log("Files hierarchy create started");
-  const files = await getFiles(INPUT_DIR);
-  console.log("Files hierarchy created");
+  try {
+    console.log("Files hierarchy create started");
+    const files = await getFiles(INPUT_DIR);
+    console.log("Files hierarchy created");
 
-  await processFiles(files);
-  console.log("All Done!");
+    await processFiles(files);
+    console.log(`${endOfLine}All Done!`);
+  } catch (error) {
+    throw error;
+  }
 }
 
 main();
