@@ -102,6 +102,24 @@ async function processFiles(files) {
 
 async function main() {
   try {
+    if (!existsSync(INPUT_DIR)) {
+      console.log(
+        "\x1b[31m%s\x1b[0m",
+        "Input directory not exist, fix INPUT_DIR value"
+      );
+
+      return;
+    }
+
+    if (!existsSync(OUT_DIR)) {
+      console.log(
+        "\x1b[31m%s\x1b[0m",
+        "Output directory not exist, fix OUT_DIR value"
+      );
+
+      return;
+    }
+
     console.log("Files hierarchy create started");
     const files = await getFiles(INPUT_DIR);
     console.log("Files hierarchy created");
