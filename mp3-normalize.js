@@ -71,6 +71,7 @@ function decode(currentFile, newFile) {
 
 async function processFiles(files) {
   const totalFiles = files.length;
+  const onePercent = totalFiles / 100;
 
   try {
     for (let index = 0; index < totalFiles; index++) {
@@ -85,7 +86,9 @@ async function processFiles(files) {
         if (!existsSync(newFile)) {
           console.log(
             "\x1b[36m%s\x1b[0m",
-            `${endOfLine}Process ${index} of ${totalFiles}`
+            `${endOfLine}~~~~~> Process ${index} of ${totalFiles} (${(
+              index / onePercent
+            ).toFixed(2)} %)`
           );
 
           await decode(file, newFile);
