@@ -47,6 +47,8 @@ function decode(currentFile, newFile) {
       "loudnorm=I=-16:TP=-1:LRA=20", // https://bva.dyndns.info/2018/10/loudness-normalization
       "-ar",
       "48k",
+      "-max_muxing_queue_size",
+      512,
       newFile,
     ],
     { stdio: "inherit" }
