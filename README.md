@@ -4,4 +4,7 @@ normalize mp3 files with nodejs and ffmpeg
 
 # run
 
-```./mp3-normalize.mjs```
+```sh
+$ cd <folder with folders of mp3 files>
+$ mp3-normalize.mjs
+```
