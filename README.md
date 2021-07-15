@@ -6,5 +6,5 @@ normalize mp3 files with nodejs and ffmpeg
 
 ```sh
 $ cd <folder with folders of mp3 files>
-$ mp3-normalize.mjs
+$ normalizeMp3.mjs
 ```
